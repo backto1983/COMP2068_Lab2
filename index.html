@@ -73,7 +73,7 @@
                 background: linear-gradient(to top, #ffffff 0%, #EFEFEF 100%);
             }
 
-            span.population {
+            span.code {
                 font-size: 15px;
             }
 
@@ -84,42 +84,42 @@
     </head>
     <body>
         <form class="search-form">
-            <input type="text" class="search" placeholder="City or State">
+            <input type="text" class="search" placeholder="Airport Name or City">
             <ul class="suggestions">
-                <li>Filter for a city</li>
-                <li>or a state</li>
+                <li>Filter for an airport name</li>
+                <li>or a city</li>
             </ul>
         </form>
         <script>
-            const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+            const endpoint = 'https://gist.githubusercontent.com/tdreyno/4278655/raw/7b0762c09b519f40397e4c3e100b097d861f5588/airports.json';
 
-            const cities = [];
+            const airports = [];
 
             fetch(endpoint)
                 .then(blob => blob.json())
-                .then(data => cities.push(...data))
+                .then(data => airports.push(...data))
 
-            function findMatches(wordToMatch, cities) {
-                return cities.filter(place => {
+            function findMatches(wordToMatch, airports) {
+                return airports.filter(place => {
                     const regex = new RegExp(wordToMatch, 'gi');
-                    return place.city.match(regex) || place.state.match(regex)
+                    return place.name.match(regex) || place.city.match(regex)
                 });
             }
 
-            function numberWithCommas(x) {
-                return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            }
+            //function numberWithCommas(x) {
+            //    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            //}
 
             function displayMatches() {
-                const matchArray = findMatches(this.value, cities);
+                const matchArray = findMatches(this.value, airports);
                 const html = matchArray.map(place => {
                     const regex = new RegExp(this.value, 'gi');
+                    const airportName = place.name.replace(regex, `<span class="hl">${this.value}</span>`);
                     const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
-                    const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
                     return `
                         <li>
-                        <span class="name">${cityName}, ${stateName}</span>
-                        <span class="population">${numberWithCommas(place.population)}</span>
+                        <span class="name">${airportName}, ${cityName}</span>
+                        <span class="code">${place.code}</span>
                         </li>
                     `;
                 }).join('');    
